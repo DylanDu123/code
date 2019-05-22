@@ -3,8 +3,12 @@ layout: post
 title:  "解决多人开发cocoapods版本不同冲突的问题"
 subtitle: "cocoapods"
 date:   2019-05-19 10:45:13 -0400
-background: '/img/posts/01.jpg'
-category: [iOS, 工具]
+
+category:
+- 移动端
+tags: 
+- ruby
+- iOS
 ---
 ## CocoaPods 是什么
 ---

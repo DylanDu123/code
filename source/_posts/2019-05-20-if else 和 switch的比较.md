@@ -4,7 +4,10 @@ title:  "if else 和 switch的比较"
 subtitle: "学习笔记"
 date:   2019-05-19 10:45:13 -0400
 background: '/img/posts/03.jpg'
-category: 编译原理
+category:
+- 学习笔记
+tags: 
+- 编译原理
 ---
 
 # 区别
