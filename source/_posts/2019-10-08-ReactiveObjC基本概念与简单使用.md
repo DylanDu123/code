@@ -29,8 +29,44 @@ RAC是一个将函数响应式编程范式带入iOS的开源库，其兼具函�
 ### 函数式编程
 函数式编程是一种编程范式，我们常见的编程范式有命令式编程（Imperative programming），函数式编程，逻辑式编程，常见的面向对象编程是也是一种命令式编程。
 命令式编程是面向计算机硬件的抽象，有变量（对应着存储单元），赋值语句（获取，存储指令），表达式（内存引用和算术运算）和控制语句（跳转指令），一句话，命令式程序就是一个冯诺依曼机的指令序列。 而函数式编程是面向数学的抽象，将计算描述为一种表达式求值，一句话，函数式程序就是一个表达式。
+它属于"结构化编程"的一种，主要思想是把运算过程尽量写成一系列嵌套的函数调用。举例来说，现在有这样一个数学表达式：
+```
+　　(1 + 2) * 3 - 4
+```
+传统的过程式编程，可能这样写：
+```
+　　var a = 1 + 2;
 
-## 基本概念
+　　var b = a * 3;
+
+　　var c = b - 4;
+
+```
+函数式编程要求使用函数，我们可以把运算过程定义为不同的函数，然后写成下面这样：
+```
+　　var result = subtract(multiply(add(1,2), 3), 4);
+```
+
+#### 特点
+##### 1 函数是"第一等公民"
+所谓"第一等公民"（first class），指的是函数与其他数据类型一样，处于平等地位，可以赋值给其他变量，也可以作为参数，传入另一个函数，或者作为别的函数的返回值。
+举例来说，下面代码中的print变量就是一个函数，可以作为另一个函数的参数。
+```
+　　var print = function(i){ console.log(i);};
+
+　　[1,2,3].forEach(print);
+```
+
+##### 2 只用"表达式"，不用"语句"
+"表达式"（expression）是一个单纯的运算过程，总是有返回值；"语句"（statement）是执行某种操作，没有返回值。函数式编程要求，只使用表达式，不使用语句。也就是说，每一步都是单纯的运算，而且都有返回值。
+
+##### 3 没有"副作用"
+所谓"副作用"（side effect），指的是函数内部与外部互动（最典型的情况，就是修改全局变量的值），产生运算以外的其他结果。函数式编程强调没有"副作用"，意味着函数要保持独立，所有功能就是返回一个新的值，没有其他行为，尤其是不得修改外部变量的值。
+
+
+> [函数式编程初探](http://www.ruanyifeng.com/blog/2012/04/functional_programming.html)
+
+## ReactiveObjC 基本概念
 ![](2019-10-08-ReactiveObjC基本概念与简单使用/01.png)
 这里需要优先关注左边的几个类。
 RACEvent：事件
@@ -152,3 +188,130 @@ RACSignal *combined =
 [numbers sendNext:@"3"];
 ```
 ![](2019-10-08-ReactiveObjC基本概念与简单使用/zip.png)
+
+### not replay
+```
+RACSubject *letters = [RACSubject subject];
+RACSignal *signal = letters;
+[signal subscribeNext:^(id x) {
+    NSLog(@"S1: %@", x);
+}];
+[letters sendNext:@"A"];
+[signal subscribeNext:^(id x) {
+    NSLog(@"S2: %@", x);
+}];
+[letters sendNext:@"B"];
+[letters sendNext:@"C"];
+```
+![](2019-10-08-ReactiveObjC基本概念与简单使用/not_replay.png)
+
+### replay
+```
+RACSubject *letters = [RACReplaySubject subject];
+RACSignal *signal = letters;
+[signal subscribeNext:^(id x) {
+  NSLog(@"S1: %@", x);
+}];
+[letters sendNext:@"A"];
+[signal subscribeNext:^(id x) {
+  NSLog(@"S2: %@", x);
+}];
+[letters sendNext:@"B"];
+[signal subscribeNext:^(id x) {
+  NSLog(@"S3: %@", x);
+}];
+[letters sendNext:@"C"];
+```
+![](2019-10-08-ReactiveObjC基本概念与简单使用/replay.png)
+
+
+### replayLast
+```
+RACSubject *letters = [RACSubject subject];
+RACSignal *signal = [letters replayLast];
+[signal subscribeNext:^(id x) {
+  NSLog(@"S1: %@", x);
+}];
+[letters sendNext:@"A"];
+[signal subscribeNext:^(id x) {
+  NSLog(@"S2: %@", x);
+}];
+[letters sendNext:@"B"];
+[signal subscribeNext:^(id x) {
+  NSLog(@"S3: %@", x);
+}];
+[letters sendNext:@"C"];
+```
+![](2019-10-08-ReactiveObjC基本概念与简单使用/replayLast.png)
+
+
+## 高级使用
+> https://blog.csdn.net/Mazy_ma/article/details/77151425
+
+### concat
+创建两个信号 `signalA` 和 `signalB`.把 `signalA` 拼接到 `signalB` 后, `signalA` 发送完成, `signalB`才会被激活
+```
+RACSignal *signalA = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:@1];
+    [subscriber sendCompleted];
+    return nil;
+}];
+
+RACSignal *signalB = [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:@2];
+    return nil;
+}];
+
+[[signalA concat:signalB] subscribeNext:^(id  _Nullable x) {
+    NSLog(@"%@",x);
+}];
+```
+**注意：第一个信号必须发送完成，第二个信号才会被激活**
+
+### then
+* 1.使用concat连接then返回的信号
+* 2.先过滤掉之前的信号发出的值
+
+```
+[[[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:@1];
+    [subscriber sendCompleted];
+    return nil;
+}] then:^RACSignal *{
+    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        [subscriber sendNext:@2];
+        return nil;
+    }];
+}] subscribeNext:^(id x) {
+    // 只能接收到第二个信号的值，也就是then返回信号的值
+    NSLog(@"%@",x); // 2
+}];
+```
+
+### ignore
+忽略值为 `xxx` 的信号
+```
+[[_textField.rac_textSignal ignore:@"xxx"] subscribeNext:^(id x) {
+    NSLog(@"%@",x);
+}];
+```
+
+### interval
+每隔一段时间发出信号
+```
+[[RACSignal interval:1 onScheduler:[RACScheduler currentScheduler]] subscribeNext:^(id x) {
+    NSLog(@"%@",x);
+}];
+```
+
+### delay
+延迟发送信号
+```
+[[[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+    [subscriber sendNext:@1];
+    return nil;
+}] delay:2] subscribeNext:^(id x) {
+
+    NSLog(@"%@",x);
+}];
+```
