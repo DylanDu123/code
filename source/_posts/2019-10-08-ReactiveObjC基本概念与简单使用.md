@@ -71,7 +71,7 @@ RAC是一个将函数响应式编程范式带入iOS的开源库，其兼具函�
 这里需要优先关注左边的几个类。
 RACEvent：事件
 RACSignal：信号（管道）
-RACSubscribe：订阅者
+RACSubscribe：管道工人
 RACDisposable： 清理者
 
 这四个类提供了 ReactiveObjC 响应式思想的支持（使用异步数据流进行编程）。首先我们通过一个简单的例子来看下 ReactiveObjC是如何工作的。
@@ -92,13 +92,13 @@ btn.backgroundColor = [UIColor blueColor];
 ```
 [btn rac_signalForControlEvents:UIControlEventTouchUpInside]
 ```
-创建了一个管道`RACSignal`。然后又给这个管道插入了一个订阅者`RACSubscribe：订阅者`.
+创建了一个管道`RACSignal`。然后又给这个管道插入了一个订阅者.
 ```
 subscribeNext:^(__kindof UIControl * _Nullable x) {
     NSLog(@"%@",x);
 }
 ```
-当按钮被点击时。会向管道里抛出一个事件`RACEvent`。当这个管道有订阅者的时候。就会把事件`RACEvent`交付给订阅者来处理。
+当按钮被点击时。会向管道里抛出一个事件`RACEvent`。当这个管道有订阅者的时候。`RACSubscribe：管道工人`就会把事件`RACEvent`交付给订阅者来处理。
 ![](2019-10-08-ReactiveObjC基本概念与简单使用/02.png)
 
 
