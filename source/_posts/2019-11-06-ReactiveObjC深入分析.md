@@ -247,7 +247,7 @@ RACDisposable *disposable = [signal subscribeNext:^(id x) {
 	}] setNameWithFormat:@"[%@] -concat: %@", self.name, signal];
 }
 ````
-调用`concat`时。首先创建了一个新的信号。订阅了第一个信号。当第一个信号结束的时候。开始订阅第二个信号。并将两个信号传递的消息通过新创建的信号的管道工人发送出去。
+调用`concat`时。首先创建了一个新的信号。订阅了第一个信号。当第一个信号结束的时候。开始订阅第二个信号。并将两个信号传递的消息通过新创建的信号的订阅者发送出去。
 
 #### zipWith
 ````
@@ -318,7 +318,7 @@ RACDisposable *disposable = [signal subscribeNext:^(id x) {
 	}] setNameWithFormat:@"[%@] -zipWith: %@", self.name, signal];
 }
 ````
-原理和`concat`类似。创建新的信号。订阅传递进来的两个信号。匹配数据。通过新的信号的管道工人将组合好的数据发送出去。
+原理和`concat`类似。创建新的信号。订阅传递进来的两个信号。匹配数据。通过新的信号的订阅者将组合好的数据发送出去。
 
 ### bind 
 ````
@@ -456,10 +456,10 @@ RACDisposable *disposable = [signal subscribeNext:^(id x) {
 此处文字描述较为复杂。我会尽力说明。
 
 * 1. 调用 merge 的时候创建了一个新的信号，我们将其命名为 new_merge_signal.
-* 2. new_merge_signal 在被调用的时候。通过管道工人将需要 merge 的信号全部发送出去。
+* 2. new_merge_signal 在被调用的时候。通过订阅者将需要 merge 的信号全部发送出去。
 * 3. new_merge_signal 主动调用了 flatten ，而 flatten 调用了 falttenMap。
 * 4. flattenMap 调用了 bind。
 * 5. bind 创建了一个新的信号，我们将其命名为 new_bind_signal。
-* 6. new_bind_signal 在被订阅的时候会主动订阅 new_merge_signal。new_merge_signal 在被订阅的时候会将所有需要 merge 的 signal 发送出去。 new_bind_signal 内部拿到需要 merge 的 signal 之后订阅所有需要合并的 signal。并将这些需要合并的 signal 发送的数据通过 new_bind_signal 的管道工人发送出去。
+* 6. new_bind_signal 在被订阅的时候会主动订阅 new_merge_signal。new_merge_signal 在被订阅的时候会将所有需要 merge 的 signal 发送出去。 new_bind_signal 内部拿到需要 merge 的 signal 之后订阅所有需要合并的 signal。并将这些需要合并的 signal 发送的数据通过 new_bind_signal 的订阅者发送出去。
 
  
