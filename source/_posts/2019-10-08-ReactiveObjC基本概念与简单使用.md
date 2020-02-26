@@ -67,7 +67,7 @@ RAC是一个将函数响应式编程范式带入iOS的开源库，其兼具函�
 > [函数式编程初探](http://www.ruanyifeng.com/blog/2012/04/functional_programming.html)
 
 ## ReactiveObjC 基本概念
-![](2019-10-08-ReactiveObjC基本概念与简单使用/01.png)
+![](/01.png)
 这里需要优先关注左边的几个类。
 RACEvent：事件
 RACSignal：信号（管道）
@@ -99,7 +99,7 @@ subscribeNext:^(__kindof UIControl * _Nullable x) {
 }
 ```
 当按钮被点击时。会向管道里抛出一个事件`RACEvent`。当这个管道有订阅者的时候。`RACSubscribe：管道工人`就会把事件`RACEvent`交付给订阅者来处理。
-![](2019-10-08-ReactiveObjC基本概念与简单使用/02.png)
+![](/02.png)
 
 
 ## 基础使用
@@ -115,7 +115,7 @@ signal = [signal filter:^BOOL(NSNumber *value) {
     NSLog(@"%@", value);
 }];
 ```
-![](2019-10-08-ReactiveObjC基本概念与简单使用/03.png)
+![](/03.png)
 
 ### map
 ```
@@ -127,7 +127,7 @@ return @(value.integerValue * 2);
 NSLog(@"%@", value);
 }];
 ```
-![](2019-10-08-ReactiveObjC基本概念与简单使用/map.png)
+![](/map.png)
 
 ### merge
 ```
@@ -137,7 +137,7 @@ RACSignal *signal2 = [@[ @4, @5 ] rac_sequence].signal;
     NSLog(@"%@", value);
 }];
 ```
-![](2019-10-08-ReactiveObjC基本概念与简单使用/merge.png)
+![](/merge.png)
 
 ### combineLatest
 ```
@@ -148,7 +148,7 @@ RACSignal *signal2 = [@[ @3, @4 ] rac_sequence].signal;
 NSLog(@"%@", value);
 }];
 ```
-![](2019-10-08-ReactiveObjC基本概念与简单使用/combineLatest.png)
+![](/combineLatest.png)
 
 ### combineLatest & reduce
 ```
@@ -162,7 +162,7 @@ RACSignal *signal2 = [@[ @3, @4 ] rac_sequence].signal;
 NSLog(@"%@", value);
 }];
 ```
-![](2019-10-08-ReactiveObjC基本概念与简单使用/combineLatest&reduce.png)
+![](/combineLatest&reduce.png)
 
 ### zip
 ```
@@ -187,7 +187,7 @@ RACSignal *combined =
 [numbers sendNext:@"2"];
 [numbers sendNext:@"3"];
 ```
-![](2019-10-08-ReactiveObjC基本概念与简单使用/zip.png)
+![](/zip.png)
 
 ### not replay
 ```
@@ -203,7 +203,7 @@ RACSignal *signal = letters;
 [letters sendNext:@"B"];
 [letters sendNext:@"C"];
 ```
-![](2019-10-08-ReactiveObjC基本概念与简单使用/not_replay.png)
+![](/not_replay.png)
 
 ### replay
 ```
@@ -222,7 +222,7 @@ RACSignal *signal = letters;
 }];
 [letters sendNext:@"C"];
 ```
-![](2019-10-08-ReactiveObjC基本概念与简单使用/replay.png)
+![](/replay.png)
 
 
 ### replayLast
@@ -242,7 +242,7 @@ RACSignal *signal = [letters replayLast];
 }];
 [letters sendNext:@"C"];
 ```
-![](2019-10-08-ReactiveObjC基本概念与简单使用/replayLast.png)
+![](/replayLast.png)
 
 
 ## 高级使用
